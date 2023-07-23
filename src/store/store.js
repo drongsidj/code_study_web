@@ -1,23 +1,22 @@
 import Vue from "vue";
-import VueRouter from "vue-router";
-import Login from "../views/LoginView.vue";
-import LoginSuccess from "../views/SuccessView.vue";
+import Vuex from "vuex";
 
-Vue.use(VueRouter);
+Vue.use(Vuex);
 
-const router = new VueRouter({
-    mode: "history",
-    base: import.meta.env.BASE_URL,
-    routes: [
-        {
-            path: "/",
-            component: Login,
+const store = new Vuex.Store({
+    state: {
+        isLoggedIn: false,
+    },
+    mutations: {
+        setLoginStatus(state, isLoggedIn) {
+            state.isLoggedIn = isLoggedIn;
         },
-        {
-            path: "/success",
-            component: LoginSuccess,
+    },
+    actions: {
+        login({ commit }) {
+            commit("setLoginStatus", true);
         },
-    ],
+    },
 });
 
-export default router;
+export default store;

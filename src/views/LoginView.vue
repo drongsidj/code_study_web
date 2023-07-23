@@ -1,72 +1,61 @@
-<script setup>
-
-</script>
-
 <template>
-  <div id="app"><router-view /></div>
+  <div>
+    <h2>Login</h2>
+    <form @submit.prevent="login">
+      <div>
+        <label for="username">Username:</label>
+        <input type="text" id="userId" v-model="userId" required />
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input
+            type="password"
+            id="userPassword"
+            v-model="userPassword"
+            required
+        />
+      </div>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+      <button type="submit">Login</button>
+    </form>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
+<script>
+import axios from "axios";
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+export default {
+  data() {
+    return {
+      userId: "",
+      userPassword: "",
+      errorMessage: "",
+    };
+  },
+  methods: {
+    async login() {
+      try {
+        const response = await axios.post(`/api/cs/user/login`, {
+          userId: this.userId,
+          userPassword: this.userPassword,
+        });
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
+        const data = response.data;
+        if (data.code === 200) {
+          console.log("Login successful!");
+          await this.$store.commit("setLoginStatus", true);
+          console.log("Login status set to true!");
+          await this.$router.push("/success");
+        } else {
+          this.errorMessage = data.message;
+        }
+      } catch (error) {
+        console.error("An error occurred during login:", error);
+        this.errorMessage = "An error occurred during login.";
+      }
+    },
+  },
+};
+</script>
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
-
+<style scoped></style>
